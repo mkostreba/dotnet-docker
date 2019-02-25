@@ -37,20 +37,21 @@ jobs:
     matrix: $[ ${{ parameters.matrix }} ]
   steps:
   - template: ../steps/init-docker-linux.yml
-  - script: >
-      $(runImageBuilderCmd) copyAcrImages
-      --manifest $(manifest)
-      --path '$(dotnetVersion)/*/$(osVariant)*/*'
-      --os-type $(osType)
-      --os-version '$(osVersion)'
-      --architecture $(architecture)
-      --registry-override $(acr.server)
-      --repo-prefix $(publishRepoPrefix)
-      $(imageBuilder.queueArgs)
-      $(stagingRepoPrefix)
-      $(acr.servicePrincipalName)
-      $(app-dotnetdockerbuild-client-secret)
-      $(acr.servicePrincipalTenant)
-      $(acr.subscription)
+  - powershell: >
+      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions) `
+        -ImageBuilderArgs copyAcrImages `
+          --manifest $(manifest) `
+          --path '$(dotnetVersion)/*/$(osVariant)*/*' `
+          --os-type $(osType) `
+          --os-version '$(osVersion)' `
+          --architecture $(architecture) `
+          --registry-override $(acr.server) `
+          --repo-prefix $(publishRepoPrefix) `
+          $(imageBuilder.queueArgs) `
+          $(stagingRepoPrefix) `
+          $(acr.servicePrincipalName) `
+          $(app-dotnetdockerbuild-client-secret) `
+          $(acr.servicePrincipalTenant) `
+          $(acr.subscription)
     displayName: Copy Images
   - template: ../steps/cleanup-docker-linux.yml

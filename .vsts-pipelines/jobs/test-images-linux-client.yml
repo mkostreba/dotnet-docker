@@ -31,12 +31,11 @@ jobs:
   - template: ../steps/init-docker-linux.yml
     parameters:
       setupRemoteDockerServer: ${{ parameters.useRemoteDockerServer }}
-      setupImageBuilder: false
       setupTestRunner: true
   - script: >
       docker run -t -d
       -v /var/run/docker.sock:/var/run/docker.sock
-      -w /repo $(dockerArmRunArgs)
+      -w /repo $(dockerArmRunOptions)
       -e RUNNING_TESTS_IN_CONTAINER=true 
       --name $(testRunner.container)
       $(testrunner.image)

@@ -13,18 +13,20 @@ jobs:
       $(imageBuilder.queueArgs)
   steps:
   - template: ../steps/init-docker-linux.yml
-  - script: >
-      $(runImageBuilderCmd) publishManifest
-      --repo-prefix $(publishRepoPrefix)
-      --username $(acr.userName)
-      --password $(BotAccount-dotnet-docker-acr-bot-password)
-      $(imageBuilder.commonCmdArgs)
+  - powershell: >
+      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions) `
+        -ImageBuilderArgs publishManifest `
+          --repo-prefix $(publishRepoPrefix) `
+          --username $(acr.userName) `
+          --password $(BotAccount-dotnet-docker-acr-bot-password) `
+          $(imageBuilder.commonCmdArgs)
     displayName: Publish Manifest
-  - script: >
-      $(runImageBuilderCmd) publishMcrReadmes
-      $(dotnetBot-userName)
-      $(dotnetBot-email)
-      $(dotnet-bot-user-repo-adminrepohook-pat)
-      $(imageBuilder.commonCmdArgs)
+  - powershell: >
+      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions)
+        -ImageBuilderArgs publishMcrReadmes `
+          $(dotnetBot-userName) `
+          $(dotnetBot-email) `
+          $(dotnet-bot-user-repo-adminrepohook-pat) `
+          $(imageBuilder.commonCmdArgs)
     displayName: Publish Readme
   - template: ../steps/cleanup-docker-linux.yml

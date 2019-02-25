@@ -22,8 +22,6 @@ jobs:
     matrix: $[ ${{ parameters.matrix }} ]
   steps:
   - template: ../steps/init-docker-windows.yml
-    parameters:
-      setupImageBuilder: false
   - script: docker login -u $(acr.userName) -p $(BotAccount-dotnet-docker-acr-bot-password) $(acr.server)
     displayName: Docker login
   - powershell: Get-ChildItem -Path tests -r | Where {$_.Extension -match "trx"} | Remove-Item

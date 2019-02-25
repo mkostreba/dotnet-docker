@@ -1,6 +1,5 @@
 parameters:
   setupRemoteDockerServer: false
-  setupImageBuilder: true
   setupTestRunner: false
 
 steps:
@@ -16,43 +15,12 @@ steps:
   ################################################################################
 - ${{ if eq(parameters.setupRemoteDockerServer, 'true') }}:
   - script: >
-      echo "##vso[task.setvariable variable=dockerArmRunArgs]
+      echo "##vso[task.setvariable variable=dockerArmRunOptions]
       -v $(DOCKER_CERT_PATH):/docker-certs
       -e DOCKER_CERT_PATH=/docker-certs
       -e DOCKER_TLS_VERIFY=1
       -e DOCKER_HOST=tcp://$(DOCKER_HOST_IP):2376"
-    displayName: Define dockerArmRunArgs Variable
-
-  ################################################################################
-  # Setup Image Builder (Optional)
-  ################################################################################
-- ${{ if eq(parameters.setupImageBuilder, 'true') }}:
-  - powershell: >
-      $imageNames = ./scripts/Get-ImageNames.ps1
-      Write-Host "##vso[task.setvariable variable=imageBuilder.baseImage]
-      $($imageNames.ImageBuilderLinux)"
-    displayName: Define imageBuilder.baseImage Variable
-  - script: >
-      echo "##vso[task.setvariable variable=imageBuilder.image]
-      microsoft-dotnet-testrunner-withrepo"
-    displayName: Define imageBuilder.image Variable
-  - script: $(Build.Repository.LocalPath)/scripts/pull-image.sh $(imageBuilder.baseImage)
-    displayName: Pull Image Builder
-  - script: >
-      docker build -t $(imageBuilder.image) --build-arg IMAGE=$(imageBuilder.baseImage) ^
-        -f ./scripts/Dockerfile.WithRepo .
-    displayName: Build Image Builder Image
-  - script: >
-      echo "##vso[task.setvariable variable=runImageBuilderCmd]
-      docker run --rm
-      -v /var/run/docker.sock:/var/run/docker.sock
-      -w /repo
-      $(dockerArmRunArgs)
-      $(imageBuilder.image)"
-    displayName: Define runImageBuilderCmd Variable
-  - ${{ if eq(parameters.setupRemoteDockerServer, 'true') }}:
-    - script: echo "##vso[task.setvariable variable=dockerClientImage]$(imageBuilder.image)"
-      displayName: Define dockerClientImage Variable
+    displayName: Define dockerArmRunOptions Variable
 
   ################################################################################
   # Setup Test Runner (Optional)
@@ -73,6 +41,3 @@ steps:
       docker build -t $(testrunner.image) --build-arg IMAGE=$(testrunner.baseImage) ^
         -f ./scripts/Dockerfile.WithRepo .
     displayName: Build Test Runner Image
-  - ${{ if eq(parameters.setupRemoteDockerServer, 'true') }}:
-    - script: echo "##vso[task.setvariable variable=dockerClientImage]$(testrunner.image)"
-      displayName: Define dockerClientImage Variable

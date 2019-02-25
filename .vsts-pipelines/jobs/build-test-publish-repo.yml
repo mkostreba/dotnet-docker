@@ -8,11 +8,17 @@ jobs:
     demands: agent.os -equals linux
   steps:
   - template: ../steps/init-docker-linux.yml
-  - script: $(runImageBuilderCmd) generateBuildMatrix --manifest $(manifest) --type build --os-type '*' --architecture '*' $(imageBuilder.generateMatrixQueueArgs)
+  - powershell: >
+      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions) -ImageBuilderArgs `
+        generateBuildMatrix --manifest $(manifest) --type build --os-type '*' --architecture '*' $(imageBuilder.generateMatrixQueueArgs)
     name: buildMatrix
-  - script: $(runImageBuilderCmd) generateBuildMatrix --manifest $(manifest) --type test --os-type '*' --architecture '*' $(imageBuilder.generateMatrixQueueArgs)
+  - powershell: >
+      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions) -ImageBuilderArgs `
+        generateBuildMatrix --manifest $(manifest) --type test --os-type '*' --architecture '*' $(imageBuilder.generateMatrixQueueArgs)
     name: testMatrix
-  - script: $(runImageBuilderCmd) generateBuildMatrix --manifest $(manifest) --type publish --os-type '*' --architecture '*' $(imageBuilder.generateMatrixQueueArgs)
+  - powershell: >
+      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions) -ImageBuilderArgs `
+        generateBuildMatrix --manifest $(manifest) --type publish --os-type '*' --architecture '*' $(imageBuilder.generateMatrixQueueArgs)
     name: publishMatrix
   - template: ../steps/cleanup-docker-linux.yml
 

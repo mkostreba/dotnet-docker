@@ -24,18 +24,19 @@ jobs:
   - template: ${{ format('../steps/init-docker-{0}.yml', parameters.dockerClientOS) }}
     parameters:
       setupRemoteDockerServer: ${{ parameters.useRemoteDockerServer }}
-  - script: >
-      $(runImageBuilderCmd) build
-      --manifest $(manifest)
-      $(imageBuilderPaths)
-      --os-version $(osVersion)
-      --registry-override $(acr.server)
-      --repo-prefix $(stagingRepoPrefix)
-      --retry
-      --push
-      --username $(acr.userName)
-      --password $(BotAccount-dotnet-docker-acr-bot-password)
-      $(imageBuilder.queueArgs)
+  - powershell: >
+      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions) `
+        -ImageBuilderArgs build `
+          --manifest $(manifest) `
+          $(imageBuilderPaths) `
+          --os-version $(osVersion) `
+          --registry-override $(acr.server) `
+          --repo-prefix $(stagingRepoPrefix) `
+          --retry `
+          --push `
+          --username $(acr.userName) `
+          --password $(BotAccount-dotnet-docker-acr-bot-password) `
+          $(imageBuilder.queueArgs)
     displayName: Build Images
   - template: ${{ format('../steps/cleanup-docker-{0}.yml', parameters.dockerClientOS) }}
     parameters:
