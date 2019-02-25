@@ -8,8 +8,8 @@ jobs:
     demands: agent.os -equals linux
   steps:
   - template: ../steps/init-docker-linux.yml
-  - powershell: >
-      ./scripts/Invoke-ImageBuilder.ps1 -DockerRunOptions $(dockerArmRunOptions) -ImageBuilderArgs `
+  - script: >
+      $(Build.Repository.LocalPath)/scripts/invoke-imagebuilder.sh -DockerRunOptions $(dockerArmRunOptions) -ImageBuilderArgs
         generateBuildMatrix --manifest $(manifest) --type build --os-type '*' --architecture '*' $(imageBuilder.generateMatrixQueueArgs)
     name: buildMatrix
   - powershell: >
