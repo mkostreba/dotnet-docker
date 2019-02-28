@@ -10,6 +10,14 @@ RUN curl -SL --output dotnet.zip https://dotnetcli.blob.core.windows.net/dotnet/
     && tar -zxf dotnet.zip -C "%ProgramFiles%\dotnet" `
     && del dotnet.zip
 
+# Install artifacts credential provider
+ENV NUGET_CREDENTIAL_PROVIDER_VERSION 0.1.11
+
+RUN curl -SL --output microsoft.nuget.credentialprovider.zip https://azureartifactassets.blob.core.windows.net/credentialprovider/releases/download/%NUGET_CREDENTIAL_PROVIDER_VERSION%/Microsoft.NetCore2.NuGet.CredentialProvider.zip `
+    && mkdir -p "C:\Users\Public\credentialprovider" `
+    && tar -C "C:\Users\Public\credentialprovider" -xzf microsoft.nuget.credentialprovider.zip `
+    && del microsoft.nuget.credentialprovider.zip
+
 # In order to set system PATH, ContainerAdministrator must be used
 USER ContainerAdministrator 
 RUN setx /M PATH "%PATH%;%ProgramFiles%\dotnet"
@@ -21,6 +29,8 @@ ENV ASPNETCORE_URLS=http://+:80 `
     DOTNET_RUNNING_IN_CONTAINER=true `
     # Enable correct mode for dotnet watch (only mode supported in a container)
     DOTNET_USE_POLLING_FILE_WATCHER=true `
+    # NuGet Credential provider path
+    NUGET_PLUGIN_PATHS="C:\Users\Public\credentialprovider\plugins\netcore\CredentialProvider.Microsoft\CredentialProvider.Microsoft.dll" `
     # Skip extraction of XML docs - generally not useful within an image/container - helps performance
     NUGET_XMLDOC_MODE=skip
 
