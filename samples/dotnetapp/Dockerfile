@@ -4,6 +4,7 @@ WORKDIR /app
 # copy csproj and restore as distinct layers
 COPY dotnetapp/*.csproj ./dotnetapp/
 COPY utils/*.csproj ./utils/
+COPY telephonedb/*.csproj ./telephonedb/
 WORKDIR /app/dotnetapp
 RUN dotnet restore
 
@@ -11,6 +12,7 @@ RUN dotnet restore
 WORKDIR /app/
 COPY dotnetapp/. ./dotnetapp/
 COPY utils/. ./utils/
+COPY telephonedb/. ./telephonedb/
 WORKDIR /app/dotnetapp
 RUN dotnet publish -c Release -o out
 

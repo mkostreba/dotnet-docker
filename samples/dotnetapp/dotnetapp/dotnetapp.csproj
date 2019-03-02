@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\dal\telephonedb\telephonedb\telephonedb.csproj" />
     <ProjectReference Include="..\utils\utils.csproj" />
   </ItemGroup>
 
